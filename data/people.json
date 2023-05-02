@@ -1,0 +1,90 @@
+[
+  {
+    "id": 2,
+    "firstName": "Nandha Kumar",
+    "lastName": "Ramesh",
+    "email": "nandha@gmail.com",
+    "password": "abc123",
+    "confirmPassword": "abc123"
+  },
+  {
+    "id": 3,
+    "firstName": "John",
+    "lastName": "Doe",
+    "email": "john@gmail.com",
+    "password": "abc123",
+    "confirmPassword": "abc123"
+  },
+  {
+    "id": 4,
+    "firstName": "Jane",
+    "lastName": "Doe",
+    "email": "jane@gmail.com",
+    "password": "abc123",
+    "confirmPassword": "abc123"
+  },
+  {
+    "id": 5,
+    "firstName": "aa",
+    "lastName": "aa",
+    "email": "aa@h.com",
+    "password": "Aaabbb123",
+    "confirmPassword": "Aaabbb123"
+  },
+  {
+    "id": 6,
+    "firstName": "aaa",
+    "lastName": "aaa",
+    "email": "aaa@gmail.com",
+    "password": "Abcde123",
+    "confirmPassword": "Abcde123"
+  },
+  {
+    "id": 7,
+    "firstName": "Dheepak",
+    "lastName": "Kumar",
+    "email": "dheepakkumar.r@gmail.com",
+    "password": "Abcde123",
+    "confirmPassword": "Abcde123"
+  },
+  {
+    "id": 8,
+    "firstName": "Dheepak",
+    "lastName": "Kumar",
+    "email": "dheepakkumar.r@gmail.com",
+    "password": "Abcde123",
+    "confirmPassword": "Abcde123"
+  },
+  {
+    "id": 9,
+    "firstName": "Dheepak",
+    "lastName": "Kumar",
+    "email": "dheepakkumar.r@gmail.com",
+    "password": "Abcde123",
+    "confirmPassword": "Abcde123"
+  },
+  {
+    "id": 10,
+    "firstName": "Dheepak",
+    "lastName": "Kumar",
+    "email": "dheepakkumar.r@gmail.com",
+    "password": "Abcde123",
+    "confirmPassword": "Abcde123"
+  },
+  {
+    "id": 11,
+    "firstName": "Dheepak",
+    "lastName": "Kumar",
+    "email": "nandhakumar282k@gmail.com",
+    "password": "Abcde123",
+    "confirmPassword": "Abcde123"
+  },
+  {
+    "id": 12,
+    "firstName": "Dheepak",
+    "lastName": "Kumar",
+    "email": "nandhakumar164101@gmail.com",
+    "password": "Abcde123",
+    "confirmPassword": "Abcde123"
+  }
+]
