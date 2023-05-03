@@ -156,49 +156,49 @@ module.exports = {
       }
     });
   },
-  putPeopleReq: function (req, res) {
-    const password = req.body.password;
-    bcrypt.hash(password.toString(), salt, (err, hash) => {
-      if (err) {
-        console.log(err);
-      }
-      // const { error, value } = querySchema.validate(req.body, {
-      //   abortEarly: false,
-      // });                   //Abort early will see through the complete req body
-      // if (error) {          //even an error is found in the first line rather than
-      //                       //breaking the validation as soon as an error is found
-      //   console.log(error); 
-      //   return res.send(error.details);
-      // }
+  // putPeopleReq: function (req, res) {
+  //   const password = req.body.password;
+  //   bcrypt.hash(password.toString(), salt, (err, hash) => {
+  //     if (err) {
+  //       console.log(err);
+  //     }
+  //     // const { error, value } = querySchema.validate(req.body, {
+  //     //   abortEarly: false,
+  //     // });                   //Abort early will see through the complete req body
+  //     // if (error) {          //even an error is found in the first line rather than
+  //     //                       //breaking the validation as soon as an error is found
+  //     //   console.log(error); 
+  //     //   return res.send(error.details);
+  //     // }
 
-      let details = {
-        firstName: req.body.firstName,
-        lastName: req.body.lastName,
-        email: req.body.email,
-        hash,
-        ID: req.params.id,
-      };
-      //let sql = 'UPDATE Admin SET firstName = ?,lastName = ?,email = ?,password = ?, confirmPassword = ? WHERE id = ?'
-      let sqlSp = "CALL spUpdatePerson(?,?,?,?,?)";
-      pool.query(
-        sqlSp,
-        [
-          req.body.firstName,
-          req.body.lastName,
-          req.body.email,
-          hash,
-          req.params.id,
-        ],
-        (err, result) => {
-          if (err) {
-            res.send("Error Updating the person");
-          } else {
-            res.send({ status: true, message: "Record updated successfully" });
-          }
-        }
-      );
-    });
-  },
+  //     let details = {
+  //       firstName: req.body.firstName,
+  //       lastName: req.body.lastName,
+  //       email: req.body.email,
+  //       hash,
+  //       ID: req.params.id,
+  //     };
+  //     //let sql = 'UPDATE Admin SET firstName = ?,lastName = ?,email = ?,password = ?, confirmPassword = ? WHERE id = ?'
+  //     let sqlSp = "CALL spUpdatePerson(?,?,?,?,?)";
+  //     pool.query(
+  //       sqlSp,
+  //       [
+  //         req.body.firstName,
+  //         req.body.lastName,
+  //         req.body.email,
+  //         hash,
+  //         req.params.id,
+  //       ],
+  //       (err, result) => {
+  //         if (err) {
+  //           res.send("Error Updating the person");
+  //         } else {
+  //           res.send({ status: true, message: "Record updated successfully" });
+  //         }
+  //       }
+  //     );
+  //   });
+  // },
   authUser: function(req,res){
     const email = req.body.email;
     const password = req.body.password;
@@ -228,6 +228,22 @@ module.exports = {
           })
         }else{
           res.send({message:"User doesn't exist"})
+        }
+      }
+    )
+  },
+  getPersonById: function(req,res){
+    const id = req.params.id;
+
+    let sql = 'SELECT * FROM Admin WHERE ID = ?'
+    pool.query(
+      sql,
+      [id],
+      (err,result) => {
+        if(err){
+          res.send(err)
+        }else{
+          res.send(result[0])
         }
       }
     )
