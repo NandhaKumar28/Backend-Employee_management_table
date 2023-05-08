@@ -12,6 +12,7 @@ const multer = require('multer')
 const dotenv = require('dotenv')
 var mysql = require("mysql");
 const streamifier = require('streamifier');
+const { error } = require("console");
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_NAME,
@@ -35,12 +36,6 @@ var pool = mysql.createPool({
   multipleStatements: true,
 });
 
-// const options = {
-//   overwrite:true,
-//   invalidate:true,
-//   resourse_type:"auto"
-// };
-
 app.use(express.json()); //Middleware
 
 //GET api/v1/people
@@ -62,14 +57,14 @@ app.delete("/api/v1/people/:id", peopleController.deletePeople);
 //GET ALL PEOPLE Database query
 app.get("/database", verifyToken, getDatabase.getDatabasereq);
 
-//POST DB Query
-//app.post("/database/post", verifyToken,multer().single('image'), getDatabase.postPeopledbReq);
+//POST (With profile pic unique email) 
+app.post('/database/post', verifyToken, multer().single('image'), getDatabase.postPeopleReq)
 
 //GET DB Query
 app.get("/database/get/", verifyToken, getDatabase.getPeoplebyParams);
 
-//PUT DB Query
-//app.put("/database/put/:id", verifyToken, getDatabase.putPeopleReq);
+//PUT (With profile pic with unique mail) 
+app.put('/database/put/:id', verifyToken, multer().single('image'), getDatabase.putPeopleReq)
 
 //DELETE DB Query
 app.delete("/database/delete/:id", verifyToken, getDatabase.deletePeopleById);
@@ -95,114 +90,6 @@ function verifyToken(req,res,next){
     next();
   });
 }
-
-//POST (With profile pic) 
-app.post('/database/post',verifyToken, multer().single('image'), async(req, res) => {  
-  const password = req.body.password;
-     bcrypt.hash(password.toString(), salt, async (err, hash) => {
-      if (err) {
-         console.log(err.message);
-       }
-  //console.log(res)
-  try{
-    
-    let streamUpload = (req) => {
-      return new Promise((resolve, reject) => {
-          let stream = cloudinary.uploader.upload_stream(
-            (error, result) => {
-              if (result) {
-                resolve(result);
-              } else {
-                reject(error);
-              }
-            }
-          );
-
-        streamifier.createReadStream(req.file.buffer).pipe(stream);
-      });
-  };
-
-  
-      let result = await streamUpload(req);
-      console.log(result.secure_url);
-  
-  
-  //  upload(req);
-    // console.log(req.body.firstName)
-    // console.log(req.body.lastName)
-    // console.log(req.body.email)
-    // console.log(hash)    
-    
-    pool.query(      
-      'INSERT INTO Admin (firstName, lastName, email, password, image_url) VALUES (?, ?, ?, ?, ?)',
-      [req.body.firstName, req.body.lastName, req.body.email, hash, result.secure_url],(err, rows) => {
-        if (!err) {
-          console.log(rows);
-        } else {
-          console.log(err);
-        }
-      }           
-    );    
-    
-    res.status(200).json({ message: 'Form submitted successfully' });
-  }
-  catch (error){    
-    console.log(error)
-    res.status(404).json({ message: 'Form submission unsuccessful' });
-  }})
-})
-
-
-//PUT (With profile pic) 
-app.put('/database/put/:id',verifyToken, multer().single('image'), async(req, res) => {    
-  //console.log(res)
-  try{
-    
-    let streamUpload = (req) => {
-      return new Promise((resolve, reject) => {
-          let stream = cloudinary.uploader.upload_stream(
-            (error, result) => {
-              if (result) {
-                resolve(result);
-              } else {
-                reject(error);
-              }
-            }
-          );
-
-        streamifier.createReadStream(req.file.buffer).pipe(stream);
-      });
-  };
-
-  
-      let result = await streamUpload(req);
-      console.log(result.secure_url);
-  
-  
-  //  upload(req);
-    // console.log(req.body.firstName)
-    // console.log(req.body.lastName)
-    // console.log(req.body.email)
-         
-    let sql = 'UPDATE Admin SET firstName = ?,lastName = ?,email = ?, image_url = ? WHERE id = ?'
-    pool.query(      
-      sql,
-      [req.body.firstName, req.body.lastName, req.body.email, result.secure_url,req.params.id],(err, rows) => {
-        if (!err) {
-          console.log(rows);
-        } else {
-          console.log(err);
-        }
-      }           
-    );    
-    
-    res.status(200).json({ message: 'Updated successfully' });
-  }
-  catch (error){    
-    console.log(error)
-    res.status(404).json({ message: 'Updatation unsuccessful' });
-  }})
-
 
 //SERVER
 app.listen(8081, () => {
