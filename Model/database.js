@@ -43,70 +43,60 @@ module.exports = {
     });
   },
 
-  // postPeopledbReq: function (req, res) {
-  //   //console.log(req)
-  //   const password = req.body.password;
-  //   bcrypt.hash(password.toString(), salt, (err, hash) => {
-  //     if (err) {
-  //       console.log(err.message);
-  //     }
-  //     let details = {
-  //       firstName: req.body.firstName,
-  //       lastName: req.body.lastName,
-  //       email: req.body.email,
-  //       hash
-  //     };
-      
-  //     let streamUpload = (req) => {
-  //       return new Promise((resolve, reject) => {
-  //           let stream = cloudinary.uploader.upload_stream(
-  //             (error, result) => {
-  //               if (result) {
-  //                 resolve(result);
-  //               } else {
-  //                 reject(error);
-  //               }
-  //             }
-  //           );
+   putPeopleReq: async (req, res) => {
+    const email = req.body.email;
   
-  //         streamifier.createReadStream(req.file.buffer).pipe(stream);
-  //       });
-  //   };
+    // Query the database to check if the email already exists
+    pool.query('SELECT id, firstName FROM Admin WHERE email = ?', [email], async (err, result) => {
+      if (err) {
+        console.error(err);
+        return res.status(500).json({ message: 'Internal Server Error' });
+      }
   
-  //   async function upload(req) {
-  //       let result = await streamUpload(req);
-  //       console.log(result.secure_url);
-  //   }
+      if (result.length > 0 && result[0].id != req.params.id) {
+        return res.send({ message: 'Email already exists' });
+        console.log(res)
+      }
+  
+      try {
+        let streamUpload = (req) => {
+          return new Promise((resolve, reject) => {
+            let stream = cloudinary.uploader.upload_stream(
+              (error, result) => {
+                if (result) {
+                  resolve(result);
+                } else {
+                  reject(error);
+                }
+              }
+            );
+  
+            streamifier.createReadStream(req.file.buffer).pipe(stream);
+          });
+        };
+  
+        let result = await streamUpload(req);
+  
+        pool.query(
+          'UPDATE Admin SET firstName = ?,lastName = ?,email = ?, image_url = ? WHERE id = ?',
+          [req.body.firstName, req.body.lastName, email, result.secure_url, req.params.id],
+          (err, rows) => {
+            if (err) {
+              console.error(err);
+              return res.status(500).json({ message: 'Internal Server Error' });
+            }
+  
+            console.log(rows);
+            res.status(200).json({ message: 'Form Updated successfully' });
+          }
+        );
+      } catch (error) {
+        console.error(error);
+        res.status(404).json({ message: 'Form updation unsuccessful' });
+      }
+    });
+  },
 
-  //     //  const { error, value } = querySchema.validate(req.body, {
-  //     //    abortEarly: false,
-  //     //  }); //Validation with JOI
-
-  //     //  if (error) {
-        
-  //     //    console.log(error.message); 
-  //     //    return res.send(error.details);
-  //     //  }
-
-  //     let sql = "INSERT INTO Admin (firstName,lastName,email,password) VALUES(?,?,?,?)";
-  //     //let sqlSp = "CALL spAddPerson(?,?,?,?,?)";
-
-  //     pool.query(
-  //       sql,
-  //       [req.body.firstName, req.body.lastName, req.body.email, hash],        
-  //       (error) => {
-  //         //
-  //         if (error) {
-  //           res.send({ status: "Failed", message: "Record creation failed" });
-  //           console.log(error.message)
-  //         } else {
-  //           res.send({ status: "Success", message: "Record created successfully" });
-  //           console.log(res)
-  //         }
-  //       }        
-  //     );
-  //   });
-  // },
   getPeoplebyParams: function (req, res) {
     let details = {
       firstName: req.body.firstName,
@@ -156,55 +146,76 @@ module.exports = {
       }
     });
   },
-  // putPeopleReq: function (req, res) {
-  //   const password = req.body.password;
-  //   bcrypt.hash(password.toString(), salt, (err, hash) => {
-  //     if (err) {
-  //       console.log(err);
-  //     }
-  //     // const { error, value } = querySchema.validate(req.body, {
-  //     //   abortEarly: false,
-  //     // });                   //Abort early will see through the complete req body
-  //     // if (error) {          //even an error is found in the first line rather than
-  //     //                       //breaking the validation as soon as an error is found
-  //     //   console.log(error); 
-  //     //   return res.send(error.details);
-  //     // }
-
-  //     let details = {
-  //       firstName: req.body.firstName,
-  //       lastName: req.body.lastName,
-  //       email: req.body.email,
-  //       hash,
-  //       ID: req.params.id,
-  //     };
-  //     //let sql = 'UPDATE Admin SET firstName = ?,lastName = ?,email = ?,password = ?, confirmPassword = ? WHERE id = ?'
-  //     let sqlSp = "CALL spUpdatePerson(?,?,?,?,?)";
-  //     pool.query(
-  //       sqlSp,
-  //       [
-  //         req.body.firstName,
-  //         req.body.lastName,
-  //         req.body.email,
-  //         hash,
-  //         req.params.id,
-  //       ],
-  //       (err, result) => {
-  //         if (err) {
-  //           res.send("Error Updating the person");
-  //         } else {
-  //           res.send({ status: true, message: "Record updated successfully" });
-  //         }
-  //       }
-  //     );
-  //   });
-  // },
+   postPeopleReq: async (req, res) => {
+    const email = req.body.email;
+  
+    // Query the database to check if the email already exists
+    pool.query('SELECT firstName FROM Admin WHERE email = ?', [email], async (err, result) => {
+      if (err) {
+        console.error(err);
+        return res.status(500).json({ message: 'Internal Server Error' });
+      }
+  
+      if (result.length > 0) {
+        return res.send({ message: 'Email already exists' });
+        res.send({message:"Email already exists"})
+      }
+  
+      const password = req.body.password;
+  
+      bcrypt.hash(password.toString(), salt, async (err, hash) => {
+        if (err) {
+          console.error(err);
+          return res.status(500).json({ message: 'Internal Server Error' });
+        }
+  
+        try {
+          let streamUpload = (req) => {
+            return new Promise((resolve, reject) => {
+              let stream = cloudinary.uploader.upload_stream(
+                (error, result) => {
+                  if (result) {
+                    resolve(result);
+                  } else {
+                    reject(error);
+                  }
+                }
+              );
+  
+              streamifier.createReadStream(req.file.buffer).pipe(stream);
+            });
+          };
+  
+          let result = await streamUpload(req);
+  
+          pool.query(
+            'INSERT INTO Admin (firstName, lastName, email, password, image_url) VALUES (?, ?, ?, ?, ?)',
+            [req.body.firstName, req.body.lastName, email, hash, result.secure_url],
+            (err, rows) => {
+              if (err) {
+                console.error(err);
+                return res.status(500).json({ message: 'Internal Server Error' });
+              }
+  
+              console.log(rows);
+              res.status(200).json({ message: 'Form submitted successfully' });
+            }
+          );
+        } catch (error) {
+          console.error(error);
+          res.send({ message: 'Form submission unsuccessful' });
+        }
+      });
+    });
+  },
+  
+  
   authUser: function(req,res){
     const email = req.body.email;
     const password = req.body.password;
 
     const options = {
-      expiresIn:"1h"
+      expiresIn:"10h"
     }
     
     let sql = "SELECT * FROM Admin WHERE email = ?"
