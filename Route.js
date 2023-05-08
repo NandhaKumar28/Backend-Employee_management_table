@@ -36,6 +36,8 @@ var pool = mysql.createPool({
   multipleStatements: true,
 });
 
+//----------------------------------FILE SYSTEM------------------------------------//
+
 app.use(express.json()); //Middleware
 
 //GET api/v1/people
@@ -52,6 +54,8 @@ app.put("/api/v1/people/:id", peopleController.putPeople);
 
 //DELETE api/v1/people/:id
 app.delete("/api/v1/people/:id", peopleController.deletePeople);
+
+//----------------------------------DATABASE---------------------------------------//
 
 //DB
 //GET ALL PEOPLE Database query
