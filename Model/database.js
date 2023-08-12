@@ -32,7 +32,6 @@ cloudinary.config({
 module.exports = {
   pool: pool,
   getDatabasereq: function (req, res) {
-    //let sql = "SELECT * FROM Admin";
     let sqlSp = "call peopledatabase.spGetAllPerson();";
     pool.query(sqlSp, function (error, result) {
       if (error) {
@@ -47,7 +46,7 @@ module.exports = {
     const email = req.body.email;
   
     // Query the database to check if the email already exists
-    let sqlSp = "CALL spUpdateAPIEmailVerification(?)"   //
+    let sqlSp = "CALL spUpdateAPIEmailVerification(?)"
     let sql = 'SELECT id, firstName FROM Admin WHERE email = ?'
     pool.query(sql, [email], async (err, result) => {
       if (err) {
@@ -57,7 +56,6 @@ module.exports = {
   
       if (result.length > 0 && result[0].id != req.params.id) {
         return res.send({ message: 'Email already exists' });
-        console.log(res)
       }
   
       try {
@@ -79,7 +77,6 @@ module.exports = {
   
         let result = await streamUpload(req);
         let sqlSp = "CALL spUdateEmployeeDetails(?,?,?,?,?)"
-        //let sql = 'UPDATE Admin SET firstName = ?,lastName = ?,email = ?, image_url = ? WHERE id = ?'
         
         pool.query(
           sqlSp,
@@ -114,7 +111,6 @@ module.exports = {
       console.log(error.details);
       return res.send("Invalid request");
     }
-    //let sql = 'SELECT * FROM Admin WHERE ID= ? || firstName=? || lastName=? || email=? || password=? || confirmPassword = ?'
     let sqlSp = "CALL spGetPersonByParameter(?,?,?,?,?)";
     pool.query(
       sqlSp,
@@ -140,7 +136,6 @@ module.exports = {
       console.log(error);
       return res.send(error.details);
     }
-    //let sql = 'DELETE FROM Admin WHERE ID=?'
     let sqlSp = "CALL `spDeletePersonbyId`(?)";
     pool.query(sqlSp, [req.params.id], (err, rows) => {
       if (!err) {
@@ -192,7 +187,6 @@ module.exports = {
   
           let result = await streamUpload(req);
           let sqlSp = 'CALL spAddEmployee(?,?,?,?,?)'
-          //let sql = 'INSERT INTO Admin (firstName, lastName, email, password, image_url) VALUES (?, ?, ?, ?, ?)'
           pool.query(
             sqlSp,
             [req.body.firstName, req.body.lastName, email, hash, result.secure_url],
@@ -224,7 +218,7 @@ module.exports = {
     }
     
     let sql = "SELECT * FROM Admin WHERE email = ?"
-    let sqlSp = "CALL spUserLogin(?)"   //
+    let sqlSp = "CALL spUserLogin(?)"   
     pool.query(
       sql,
       [email],
@@ -250,7 +244,7 @@ module.exports = {
   },
   getPersonById: function(req,res){
     const id = req.params.id;
-    let sqlSp = "CALL spGetEmployeeByID(?)"  //
+    let sqlSp = "CALL spGetEmployeeByID(?)"  
     let sql = 'SELECT * FROM Admin WHERE ID = ?'
     pool.query(
       sql,
