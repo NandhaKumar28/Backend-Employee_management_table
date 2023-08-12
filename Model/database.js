@@ -214,7 +214,7 @@ module.exports = {
     const password = req.body.password;
 
     const options = {
-      expiresIn:"10h"
+      expiresIn:"1h"
     }
     
     let sql = "SELECT * FROM Admin WHERE email = ?"
